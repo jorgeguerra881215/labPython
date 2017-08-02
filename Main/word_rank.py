@@ -7,18 +7,20 @@ from os.path import basename
 
 def ranking_similar_words(path, len_of_words):
     lines = readAllLine(path, 'ranking')
-    fileName = 'ranking_with_leng_of_word_'+len_of_words+'.txt'
+    fileName = 'new_ranking_with_leng_of_word_'+len_of_words+'.txt'
     fileResult = open(path+os.sep+fileName, 'w')
-    fileResult.write('Words |=> Whole Frequency - [Id Connection] and (frequency)\n')
+    #fileResult.write('Words |=> Connection Frequency , Whole Frequency - [Id Connection] and (frequency)\n')
+    fileResult.write('Words - Connection_Frequency - Whole_Frequency - Id_Connection,frequency)\n')
     list_all_words = dict()
     result = dict()
     aux_dict = dict()
     count = 0
     length = int(len_of_words)
     for line in lines:
-        text = line.split('|')
-        if count != 0 and len(text) == 4:
-            connection = line.split('|')
+        #text = line.split('|')
+        connection = line.split('|')
+        if count != 0 and len(connection) == 4:
+            #connection = line.split('|')
             text = connection[3]
             status = clear_text(text)
             note = clear_text(connection[0])
@@ -36,9 +38,10 @@ def ranking_similar_words(path, len_of_words):
         if count > 1:
             meta_data = ''
             dictMetaData = result[k][1]
+            count_of_connection = str(len(dictMetaData.keys()))
             for k2 in dictMetaData.keys():
-                meta_data += k2 + '(' + str(dictMetaData[k2])+'),'
-            result_line = k + ' |=> ' + str(count) + ' - ' + meta_data + '\n'
+                meta_data += k2 + ',' + str(dictMetaData[k2])+' '
+            result_line = k + '-' + count_of_connection + '-' + str(count) + '-' + meta_data + '\n'
             fileResult.write(result_line)
 
     fileResult.close()
