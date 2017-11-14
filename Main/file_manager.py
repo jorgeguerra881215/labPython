@@ -3,7 +3,7 @@ __author__ = 'root'
 import os
 import re
 from os.path import basename
-
+#Recive path to folder and read whole lines in each files found it
 def readAllLine(path, exclude=''):
     for file in os.listdir(path):
         if exclude != '':
@@ -17,18 +17,37 @@ def readAllLine(path, exclude=''):
                 for line in text:
                     yield line
 
+def readAllLinesByFile(path,file):
+    with open(path + os.sep + file, 'r') as text:
+        for line in text:
+            yield line
+
+def getFiles(path, exclude = ''):
+    for file in os.listdir(path):
+        if exclude != '':
+            filename = basename(file)
+            if exclude not in filename:
+                yield file
+        else:
+            yield file
+
+def getFileByName(path, name):
+    for file in os.listdir(path):
+        fileName = basename(file)
+        if fileName == name:
+            yield file
 
 def get_status(path, exclude=''):
     for line in readAllLine(path, exclude):
         if len(line)>1:
             yield line[3]
 
-def clear_text(text,token=''):
+def clear_text(text, token='', substitute=" "):
     #Remove empty spaces
     text = re.sub(" +", "", text)
     text = re.sub("\n", "", text)
     if token != '':
-        text = re.sub(token," ",text)
+        text = re.sub(token, substitute, text)
     return text
 
 

@@ -1,6 +1,7 @@
 __author__ = 'jorge'
 #Crear el dataset (json) que utiliza RiskID a partir del dataset de Stratosphere.
 
+
 import os
 import sys
 import file_manager as fm
@@ -34,7 +35,7 @@ def build_json(path, word_len):
     fileResult.write(']')
     fileResult.close()
 
-#Crear justamente el json con secuencias de longitud 5, 10 y 15
+#Crear justamente el json con secuencias de longitud 5, 10 y 15 a partir del dataset 22, 45 o 87
 def build_json_with_length_fixed(path):
     lines = fm.readAllLine(path, 'dataset_Cx')
     fileName = 'dataset_Cx.json'
@@ -70,6 +71,42 @@ def build_json_with_length_fixed(path):
     fileResult.write(']')
     fileResult.close()
 
+#Crear justamente el json con secuencias de longitud 5, 10 y 15 a partir del dataset c13-full
+def build_json_with_length_fixed_using_c13_full(path):
+    lines = fm.readAllLine(path, 'dataset_Cx')
+    fileName = 'dataset_Cx.json'
+    fileResult = open(path + os.sep + fileName, 'w')
+    fileResult.write('[')
+    count = 0 #variable para no usar la primera linea de los data set
+    count_selected_element = 0
+    id_list = []
+    clusters = get_clusters()
+    for line in lines:
+        if count != 0 and len(line) > 1:
+            text = line.split(' ')
+            description_before_clear = fm.clear_text(text[7])
+            id = fm.clear_text(text[0])#[1:-1]
+            if len(description_before_clear) > 20 and id not in id_list:
+                #id = fm.clear_text(text[0])[1:-1]
+                id_list.append(id)
+                #id_connection = text[1] + '-' + text[2] + '-' + text[3] + '-' + text[4]
+                id_value = text[1] + '-' + text[2] + '-' + text[3] + '-' + text[4] #fm.clear_text(text[2])
+                title = text[6]#fm.clear_text(text[1], "-")
+                #making all word
+                document = ''
+                for word in all_word(description_before_clear, 5):
+                    document += word + ' '
+                for word in all_word(description_before_clear, 10):
+                    document += word + ' '
+                for word in all_word(description_before_clear, 15):
+                    document += word + ' '
+                description = document
+                title = create_label(title)#'Unlabelled' if count_selected_element % 4 == 0 else create_label(title)
+                data_json(fileResult, id, title, description, id_value, clusters[count_selected_element])
+                count_selected_element += 1
+        count += 1
+    fileResult.write(']')
+    fileResult.close()
 
 def all_word(text, length):
     if len(text) < length:
@@ -86,7 +123,6 @@ def all_word_list(text, length):
     for idx in xrange(0, len(text) - length + 1):
         result.append(text[idx:length + idx])
     return result
-
 
 def get_clusters():
     result = []
